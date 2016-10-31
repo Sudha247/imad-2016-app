@@ -68,7 +68,7 @@
 					cxt.stroke();
 					cxt.closePath();
 					content[canvasNumber-1]='X';
-					alert(squaresFilled);
+					//alert(squaresFilled);
 				}
 
 				else{
@@ -77,7 +77,7 @@
 					cxt.stroke();
 					cxt.closePath();
 					content[canvasNumber-1]='O';
-					alert(squaresFilled);
+					//alert(squaresFilled);
 				}
 				}
 
@@ -126,9 +126,9 @@
 		
 		<div class="jumbotron pl">
 		<div id="r1" class="row">
-		<canvas id="canvas1" width="120px" height="120px" style="border:1px solid black" align="left" onclick="canvasClicked(1)"></canvas>
-		<canvas id="canvas2" width="120px" height="120px" style="border:1px solid black" align="center" onclick="canvasClicked(2)"></canvas>
-		<canvas id="canvas3" width="120px" height="120px" style="border:1px solid black" align="right" onclick="canvasClicked(3)"></canvas>
+		<canvas id="canvas1" width="120px" height="120px" style="border:1px solid black" onclick="canvasClicked(1)"></canvas>
+		<canvas id="canvas2" width="120px" height="120px" style="border:1px solid black" onclick="canvasClicked(2)"></canvas>
+		<canvas id="canvas3" width="120px" height="120px" style="border:1px solid black" onclick="canvasClicked(3)"></canvas>
 		</div>
 		<div id="r2" class="row">
 		<canvas id="canvas4" width="120px" height="120px" style="border:1px solid black" onclick="canvasClicked(4)"></canvas>

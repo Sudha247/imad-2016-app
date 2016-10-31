@@ -54,10 +54,10 @@
 
 		//Game methods
 		function canvasClicked(canvasNumber){
-			theCanvas = "canvas"+canvasNumber;
+			theCanvas = "canvas"+string(canvasNumber);
 			c = document.getElementById(theCanvas);
 			cxt = c.getContext("2d");
-
+            
 			if (painted[canvasNumber-1]==false) {
 				if(turn%2==0){
 					cxt.beginPath();
@@ -68,6 +68,7 @@
 					cxt.stroke();
 					cxt.closePath();
 					content[canvasNumber-1]='X';
+					alert(squaresFilled);
 				}
 
 				else{
@@ -76,6 +77,8 @@
 					cxt.stroke();
 					cxt.closePath();
 					content[canvasNumber-1]='O';
+					alert(squaresFilled);
+				}
 				}
 
 				turn++;

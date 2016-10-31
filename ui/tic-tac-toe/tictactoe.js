@@ -1,95 +1,194 @@
-// Main Game Handling class /
-var TicTacToe = {
-    turn: "O",  // Keeps a record of who's turn it is
-    board: ["", "", "", "", "", "", "", "", "", ""],  // Keeps a record of the TicTacToe Board
-    win: false, // records who won if the game is over
-
-    // Clears and starts a new game with a new board /
-    restartGame: function() {
-      // Draw the board
-      var board_table = '<table cellpadding="0px" cellspacing="0px" align="center" border="0px" class="board"><tr><td id="ttt0"> </td><td id="ttt1"> </td><td id="ttt2"> </td></tr><tr><td id="ttt3"> </td><td id="ttt4"> </td><td id="ttt5"> </td></tr><tr><td id="ttt6"> </td><td id="ttt7"> </td><td id="ttt8"> </td></tr></table>';
-      $("#board").html(board_table);
-      $("#menu").hide();
-
-      // clear the board
-      this.board = ["", "", "", "", "", "", "", "", "", ""];
-
-      // Add on-click events to each of the boxes of the board
-      $("#board td").click(function(e) {
-          TicTacToe.move( e.target.id );
-         });
-
-    },
-
-    // Handles clicks spaces on the board /
-    move: function(id) {
-      var space = $("#" + id);  // Board space table element
-      var num = id.replace("ttt", ""); // # representing the space on the board
-
-      // If no one's gone there, and the game isn't over, go there!
-      if (!this.board[num] && !this.win) {
-        space.html( this.turn );
-        this.board[num] = this.turn;
-        this.nextTurn();  // End turn
+var board = new Array(9);
+ 
+function init() {
+  /* use touch events if they're supported, otherwise use mouse events */
+  var down = "mousedown"; var up = "mouseup"; 
+  if ('createTouch' in document) { down = "touchstart"; up ="touchend"; }
+  
+  /* add event listeners */
+  document.querySelector("input.button").addEventListener(up, newGame, false);
+  var squares = document.getElementsByTagName("td");
+  for (var s = 0; s < squares.length; s++) {
+    squares[s].addEventListener(down, function(evt){squareSelected(evt, getCurrentPlayer());}, false);
+  }
+  
+  /* create the board and set the initial player */
+  createBoard();
+  setInitialPlayer();
+}
+ 
+ 
+/****************************************************************************************/
+/* creating or restoring a game board, adding Xs and Os to the board, saving game state */
+/****************************************************************************************/
+function createBoard() {
+ 
+  /* create a board from the stored version, if a stored version exists */
+  if (window.localStorage && localStorage.getItem('tic-tac-toe-board')) {
+    
+    /* parse the string that represents our playing board to an array */
+    board = (JSON.parse(localStorage.getItem('tic-tac-toe-board')));
+    for (var i = 0; i < board.length; i++) {
+      if (board[i] != "") {
+        fillSquareWithMarker(document.getElementById(i), board[i]);
       }
-    },
-
-    // Iterate turn and check if anyone one yet /
-    nextTurn: function() {
-      this.turn = (this.turn == "O") ? "X" : "O";
-      this.win = this.check4Win();
-      if (this.win) {
-          this.endGame();
-      }
-    },
-
-    // Display who won and options for new games /
-    endGame: function() {
-
-      if (this.win == "Cat") {
-          $("#menu").html("Cats Game.");
-      } else {
-          $("#menu").html(this.win + " wins!");
-      }
-      $("#menu").append("<div id="play_again">Play Again</div>");
-
-      // Button for playing again.
-      $("#play_again").click(function () { TicTacToe.restartGame();  });
-      $("#menu").show();
-      this.win = false;
-
-    },
-
-    // If any of these patters of board spaces have all X's or all O's somebody won!
-    wins: [[0,1,2], [3,4,5], [6,7,8], [0,3,6], [1,4,7], [2,5,8], [0,4,8], [6,4,2]],
-
-    // Check for whether someone won the game of it was a Cat's game.                                                                                                                                                                                                                                                                                                
-    check4Win: function() {
-
-      // Loop through all possible winning combinations
-      for (k in this.wins){
-        var pattern = this.wins[k];
-            var p = this.board[pattern[0]] + this.board[pattern[1]] + this.board[pattern[2]];
-            if (p == "XXX") {
-              return "X";  // X Won!
-            } else if (p == "OOO") {
-              return "O";  // O Won!
-            }
-          }
-
-          // Check if all spaces in the board are filled, then its a Cat's game
-          var cnt = 0;
-          for (s in this.board) {
-            if (this.board[s]) { cnt+=1; }
-          }
-          if (cnt == 9) {
-            return "Cat";  // Cat's game!
-          }
-      }
-    };
-
-    $(document).ready(function() {
-
-        // Start a game!
-        TicTacToe.restartGame();
-    });
+    }
+  }
+  /* otherwise, create a clean board */
+  else {  
+    for (var i = 0; i < board.length; i++) {
+      board[i] = "";                               
+      document.getElementById(i).innerHTML = "";
+    }
+  }
+}
+ 
+/*** call this function whenever a square is clicked or tapped ***/
+function squareSelected(evt, currentPlayer) {
+  var square = evt.target;
+  /* check to see if the square already contains an X or O marker */
+  if (square.className.match(/marker/)) {
+    alert("Sorry, that space is taken!  Please choose another square.");
+    return;
+  }
+  /* if not already marked, mark the square, update the array that tracks our board, check for a winner, and switch players */
+  else {
+    fillSquareWithMarker(square, currentPlayer);
+    updateBoard(square.id, currentPlayer);
+    checkForWinner();
+    switchPlayers(); 
+  }
+}
+ 
+/*** create an X or O div and append it to the square ***/
+function fillSquareWithMarker(square, player) {
+  var marker = document.createElement('div');
+  /* set the class name on the new div to X-marker or O-marker, depending on the current player */
+  marker.className = player + "-marker";
+  square.appendChild(marker);
+}
+ 
+/*** update our array which tracks the state of the board, and write the current state to local storage ***/
+function updateBoard(index, marker) {
+  board[index] = marker;
+  
+  /* HTML5 localStorage only allows storage of strings - convert our array to a string */
+  var boardstring = JSON.stringify(board);
+ 
+  /* store this string to localStorage, along with the last player who marked a square */
+  localStorage.setItem('tic-tac-toe-board', boardstring); 
+  localStorage.setItem('last-player', getCurrentPlayer());
+}
+ 
+ 
+/***********************************************************************************/
+/* checking for and declaring a winner, after a square has been marked with X or O */
+/***********************************************************************************/
+/* Our Tic Tac Toe board, an array:
+  0 1 2
+  3 4 5
+  6 7 8
+*/
+function declareWinner() {
+  if (confirm("We have a winner!  New game?")) {
+    newGame();
+  }
+}
+ 
+function weHaveAWinner(a, b, c) {
+  if ((board[a] === board[b]) && (board[b] === board[c]) && (board[a] != "" || board[b] != "" || board[c] != "")) {
+    setTimeout(declareWinner(), 100);
+    return true;
+  }
+  else
+    return false;
+}
+ 
+function checkForWinner() {
+  /* check rows */
+  var a = 0; var b = 1; var c = 2;
+  while (c < board.length) {
+    if (weHaveAWinner(a, b, c)) {
+      return;
+    }
+    a+=3; b+=3; c+=3;
+  }
+    
+  /* check columns */
+  a = 0; b = 3; c = 6;
+  while (c < board.length) {
+    if (weHaveAWinner(a, b, c)) {
+      return;
+    }
+    a+=1; b+=1; c+=1;
+  }
+ 
+  /* check diagonal right */
+  if (weHaveAWinner(0, 4, 8)) {
+    return;
+  }
+  /* check diagonal left */
+  if (weHaveAWinner(2, 4, 6)) {
+    return;
+  }
+  
+  /* if there's no winner but the board is full, ask the user if they want to start a new game */
+  if (!JSON.stringify(board).match(/,"",/)) {
+    if (confirm("It's a draw. New game?")) {
+      newGame();
+    }
+  }
+}
+ 
+ 
+/****************************************************************************************/
+/* utilities for getting the current player, switching players, and creating a new game */
+/****************************************************************************************/
+function getCurrentPlayer() {
+  return document.querySelector(".current-player").id;
+}
+ 
+/* set the initial player, when starting a whole new game or restoring the game state when the page is revisited */
+function setInitialPlayer() {
+  var playerX = document.getElementById("X");
+  var playerO = document.getElementById("O");
+  playerX.className = "";
+  playerO.className = "";
+    
+  /* if there's no localStorage, or no last-player stored in localStorage, always set the first player to X by default */
+  if (!window.localStorage || !localStorage.getItem('last-player')) {
+    playerX.className = "current-player";
+    return;
+  } 
+ 
+  var lastPlayer = localStorage.getItem('last-player');  
+  if (lastPlayer == 'X') {
+    playerO.className = "current-player";
+  }
+  else {
+    playerX.className = "current-player";
+  }
+}
+ 
+function switchPlayers() {
+  var playerX = document.getElementById("X");
+  var playerO = document.getElementById("O");
+  
+  if (playerX.className.match(/current-player/)) {
+    playerO.className = "current-player";
+    playerX.className = "";
+  }
+  else {
+    playerX.className = "current-player";
+    playerO.className = "";
+  }
+}
+ 
+function newGame() {  
+  /* clear the currently stored game out of local storage */
+  localStorage.removeItem('tic-tac-toe-board');
+  localStorage.removeItem('last-player');
+  
+  /* create a new game */
+  createBoard();
+}

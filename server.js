@@ -102,6 +102,10 @@ app.get('/article-three',function(reg,res){
    res.send(createTemplate(articles.articleThree));
 });*/
 
+app.get('/rpsls', function(req, res){
+    res.send(path.join(__dirname,'ui/rpsls/rpsls.html'));
+});
+
 app.get('/ui/style.css', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'style.css'));
 });

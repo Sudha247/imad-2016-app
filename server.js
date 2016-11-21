@@ -6,7 +6,7 @@ var app = express();
 app.use(morgan('combined'));
 
 var articles = {
- articleOne : {
+ 'article-one' : {
 	title: 'Article One | Sudha',
 	heading : 'Artile One',
 	date: 'Nov 20, 2016',
@@ -22,7 +22,7 @@ var articles = {
             
 },
 
- articleTwo : {
+ 'article-two' : {
 	title: 'Article Two | Sudha',
 	heading: 'Article Two',
 	date: 'Nov 20, 2016',
@@ -31,7 +31,7 @@ var articles = {
 	`
 },
 
- articleThree : {
+ 'article-three' : {
 	title: 'Article Three | Sudha',
 	heading: 'Article Three',
 	date: 'Nov 20, 2016',
@@ -41,6 +41,7 @@ var articles = {
 }
 
 };
+
 
 function createTemplate(data){
 	var title = data.title;
@@ -81,7 +82,14 @@ app.get('/', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'index.html'));
 });
 
-app.get('/article-one',function(reg,res){
+app.get('/:articleName', function(req, res){
+    //articleName == article-one
+    var articleName = req.params.articleName;
+    res.send(createTemplate(articles[articleName]));
+});
+
+
+/*app.get('/article-one',function(reg,res){
    //res.sendFile(path.join(__dirname, 'ui', 'article-one.html'));
    res.send(createTemplate(articles.articleOne));
 });
@@ -92,7 +100,7 @@ app.get('/article-two',function(reg,res){
 app.get('/article-three',function(reg,res){
    //res.sendFile(path.join(__dirname, 'ui', 'article-three.html'));
    res.send(createTemplate(articles.articleThree));
-});
+});*/
 
 app.get('/ui/style.css', function (req, res) {
   res.sendFile(path.join(__dirname, 'ui', 'style.css'));

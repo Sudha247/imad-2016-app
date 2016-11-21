@@ -103,7 +103,7 @@ app.get('/article-three',function(reg,res){
 });*/
 
 app.get('/rpsls', function(req, res){
-    res.send(path.join(__dirname,'ui/rpsls/rpsls.html'));
+    res.send(path.join(__dirname,'ui/rpsls','rpsls.html'));
 });
 
 app.get('/ui/style.css', function (req, res) {

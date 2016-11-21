@@ -86,6 +86,10 @@ app.get('/rpsls', function(req, res){
     res.sendFile(path.join(__dirname, 'ui/rpsls', 'rpsls.html'));
 });
 
+app.get('/mccarthy', function(req, res){
+    res.sendFile(path.join(__dirname, 'ui/misc', 'tribute.html'));
+});
+
 app.get('/:articleName', function(req, res){
     //articleName == article-one
     var articleName = req.params.articleName;

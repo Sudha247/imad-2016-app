@@ -83,7 +83,7 @@ app.get('/', function (req, res) {
 });
 
 app.get('/rpsls', function(req, res){
-    res.send(path.join(__dirname,'ui/rpsls','rpsls.html'));
+    res.sendFile(path.join(__dirname, 'ui/rpsls', 'rpsls.html'));
 });
 
 app.get('/:articleName', function(req, res){

@@ -60,7 +60,7 @@ var HtmlTemplate = `<!DOCTYPE html>
         
     <div class="container">   
         <div>
-            <G href = "/">Home</G>
+            <a href = "/">Home</a>
         </div>
         <hr/>
         <h3>

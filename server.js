@@ -2,6 +2,7 @@ var express = require('express');
 var morgan = require('morgan');
 var path = require('path');
 var Pool = require('pg').Pool;
+var crypto = require('crypto');
 
 var config = {
   user: 'sudha247',
@@ -78,6 +79,18 @@ app.get('/rpsls', function(req, res){
 
 app.get('/mccarthy', function(req, res){
     res.sendFile(path.join(__dirname, 'ui/misc', 'tribute.html'));
+});
+
+function hash(input, salt){
+    
+    var hashed = crypto.pbkdf2Sync(input, salt, 10000, 512, 'sha512');
+    return hashed.toString('hex');
+    
+}
+
+app.get('/hash/:input',function(req, res){
+    var hashedString = hash(req.params.input, 'this-is-a-random-string');
+    res.send(hashedString);
 });
 
 /*app.get('/articles/:articleName', function(req, res){

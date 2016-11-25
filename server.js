@@ -84,6 +84,10 @@ app.get('/rpsls', function(req, res){
     res.sendFile(path.join(__dirname, 'ui/rpsls', 'rpsls.html'));
 });
 
+app.get('/weather', function(req, res){
+    res.sendFile(path.join(__dirname, 'ui/misc', 'weather.html'));
+});
+
 app.get('/mccarthy', function(req, res){
     res.sendFile(path.join(__dirname, 'ui/misc', 'tribute.html'));
 });

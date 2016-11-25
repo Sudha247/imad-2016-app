@@ -137,6 +137,12 @@ app.post('/login', function(req, res){
             var salt = dbString.split('$')[2];
             var hashedPassword = hash(password, salt);
             if(hashedPassword === dbString ){
+                
+                //Set the session
+                
+                req.session.auth = {userid: result.rows[0].id};
+                
+                
                 res.send('Credentials are correct!');
             } else{
                  res.status(403).send('Username or password does not exist!');
@@ -145,6 +151,16 @@ app.post('/login', function(req, res){
             }
         }
     });
+});
+
+app.get('/check-login', function(req, res){
+   if(req.session&&req.session.auth &&req.session.auth.userId){
+       res.send('You are logged in: '+req.seeion.auth.userId.toString());
+   } 
+   
+   else{
+       res.send('You are not logged in!');
+   }
 });
 
 /*app.get('/articles/:articleName', function(req, res){
